@@ -1,0 +1,100 @@
+version: '3.1'
+
+services:
+  zoo:
+    image: zookeeper
+    restart: on-failure
+    hostname: zoo
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+
+  rmq:
+    image: rabbitmq:3.8.3-alpine
+
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 25 && python master.py"
+    volumes:
+      - .:/project-test/project
+    links:
+      - rmq
+      - zoo
+      - master-mongo
+    depends_on:
+      - rmq
+      - zoo
+      - master-mongo
+    restart: on-failure
+
+
+  sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 25 && python sync_worker.py"
+    volumes:
+      - .:/project-test/project
+    links:
+      - rmq
+      - zoo
+      - sync-mongo
+    depends_on:
+      - rmq
+      - zoo
+      - sync-mongo
+    restart: on-failure
+   
+  workers:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - .:/project-test/project
+    links:
+      - rmq
+      - zoo
+    depends_on:
+      - rmq
+      - zoo
+    image: workers:latest
+    restart: on-failure
+
+
+  orchestrator:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    command: sh -c "sleep 30 && python3 orchestrator.py"
+    volumes:
+      - .:/project-test/project
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - rmq
+    depends_on:
+      - zoo
+      - rmq
+    restart: on-failure  
+    ports: 
+      - 80:5000
+    
+  sync-mongo:
+    image: mongo:latest
+    restart: always
+    container_name: sync-mongo
+    environment:
+      - TEAM_NAME=CC_0230_0688_1002_1799
+
+  master-mongo:
+    image: mongo:latest
+    restart: always
+    container_name: master-mongo
+    environment:
+      - TEAM_NAME=CC_0230_0688_1002_1799
+
+     
+   
