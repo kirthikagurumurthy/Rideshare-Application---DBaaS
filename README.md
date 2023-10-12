@@ -2,7 +2,7 @@
 
 <h2> Architecture</h2>
 <img src="Report/DBaaS_Architecture.jpg" height=500></img>
-<p><b>Note:</b> Please read the <a href="https://github.com/r-i-c-h-a/CC-Project-DBaaS/blob/master/Report/CC_0230_0688_1002_1799-ReportTemplateCloudComputing.pdf">report</a> for a better insight on the architecture.</p>
+<p><b>Note:</b> Please read the <a href="https://github.com/kirthikagurumurthy/CC-Project-DBaaS/blob/master/Report/ReportTemplateCloudComputing.docx">report</a> for a better insight on the architecture.</p>
 
 <h2> Instructions to run the code</h2>
 <h3> Rides Instance </h3>
